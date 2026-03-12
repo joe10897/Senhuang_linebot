@@ -1,0 +1,288 @@
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/google/api_core/_python_version_support.py:246: FutureWarning: You are using a non-supported Python version (3.9.6). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+  warnings.warn(message, FutureWarning)
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/google/auth/__init__.py:54: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/google/oauth2/__init__.py:40: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+  warnings.warn(eol_message.format("3.9"), FutureWarning)
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:23: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:148: LineBotSdkDeprecatedIn30: Call to deprecated class LineBotApi. (Use v3 class; linebot.v3.<feature>. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:149: LineBotSdkDeprecatedIn30: Call to deprecated class WebhookHandler. (Use 'from linebot.v3.webhook import WebhookHandler' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  handler = WebhookHandler(LINE_CHANNEL_SECRET)
+ * Serving Flask app 'app'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://192.168.1.200:5001
+[33mPress CTRL+C to quit[0m
+127.0.0.1 - - [12/Mar/2026 17:48:56] "POST /callback HTTP/1.1" 200 -
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:348: LineBotSdkDeprecatedIn30: Call to deprecated method reply_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).reply_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
+127.0.0.1 - - [12/Mar/2026 17:49:04] "POST /callback HTTP/1.1" 200 -
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:424: LineBotSdkDeprecatedIn30: Call to deprecated method get_message_content. (Use 'from linebot.v3.messaging import MessagingApiBlob' and 'MessagingApiBlob(...).get_message_content(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  message_content = line_bot_api.get_message_content(event.message.id)
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:442: LineBotSdkDeprecatedIn30: Call to deprecated method reply_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).reply_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
+127.0.0.1 - - [12/Mar/2026 17:50:57] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 17:51:07] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 17:51:18] "POST /callback HTTP/1.1" 200 -
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:370: LineBotSdkDeprecatedIn30: Call to deprecated method reply_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).reply_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.reply_message(event.reply_token, TextSendMessage(text="🔍 A.A.D 系統正在分析您的照片，請稍候..."))
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:387: LineBotSdkDeprecatedIn30: Call to deprecated method push_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).push_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.push_message(user_id, TextSendMessage(text=response.text))
+127.0.0.1 - - [12/Mar/2026 17:51:47] "POST /callback HTTP/1.1" 200 -
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:365: LineBotSdkDeprecatedIn30: Call to deprecated method reply_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).reply_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+[2026-03-12 17:52:36,915] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=a100b08c-da61-4b54-b420-fbbcf388a297, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': 'a100b08c-da61-4b54-b420-fbbcf388a297', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 09:52:36 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 09:52:36 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 17:52:36] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+[2026-03-12 17:53:37,689] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=c55fb506-1137-48d5-babd-3d9365586e79, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': 'c55fb506-1137-48d5-babd-3d9365586e79', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 09:53:37 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 09:53:37 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 17:53:37] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+[2026-03-12 17:54:38,533] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=61dc08e8-a749-4db0-bfe4-26d1f0349e20, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': '61dc08e8-a749-4db0-bfe4-26d1f0349e20', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 09:54:38 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 09:54:38 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 17:54:38] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+[2026-03-12 17:55:39,280] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=1afe27e6-e616-4fe5-9635-8053a39dbb75, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': '1afe27e6-e616-4fe5-9635-8053a39dbb75', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 09:55:39 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 09:55:39 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 17:55:39] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+[2026-03-12 17:56:40,009] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=d4f550a5-157c-4a54-8ca7-7ab04004cdb4, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': 'd4f550a5-157c-4a54-8ca7-7ab04004cdb4', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 09:56:40 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 09:56:40 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 17:56:40] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+[2026-03-12 17:57:41,234] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=c2b5a5c0-a706-4cdb-a687-1f990008c573, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': 'c2b5a5c0-a706-4cdb-a687-1f990008c573', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 09:57:41 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 09:57:41 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 17:57:41] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+[2026-03-12 17:58:42,052] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=23d5519b-d1e0-414b-aa2e-709b9407fe97, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': '23d5519b-d1e0-414b-aa2e-709b9407fe97', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 09:58:42 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 09:58:42 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 17:58:42] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+127.0.0.1 - - [12/Mar/2026 17:58:59] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 17:59:38] "POST /callback HTTP/1.1" 200 -
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:392: LineBotSdkDeprecatedIn30: Call to deprecated method push_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).push_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.push_message(user_id, TextSendMessage(text="抱歉，A.A.D 系統分析過程中發生錯誤，請稍後再試。"))
+127.0.0.1 - - [12/Mar/2026 17:59:42] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 17:59:50] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 17:59:58] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 18:00:02] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 18:00:30] "POST /callback HTTP/1.1" 200 -
+[2026-03-12 18:01:16,051] ERROR in app: Exception on /callback [POST]
+Traceback (most recent call last):
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 310, in callback
+    handler.handle(body, signature)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 278, in handle
+    self.__invoke_func(func, event, payload)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/webhook.py", line 290, in __invoke_func
+    func(event)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py", line 365, in handle_message
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/deprecated/classic.py", line 199, in wrapper_function
+    return wrapped_(*args_, **kwargs_)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 123, in reply_message
+    self._post(
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2116, in _post
+    self.__check_error(response)
+  File "/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/venv/lib/python3.9/site-packages/linebot/api.py", line 2152, in __check_error
+    raise LineBotApiError(
+linebot.exceptions.LineBotApiError: LineBotApiError: status_code=400, request_id=3972e848-faa5-4991-ad4c-f98e086ad802, error_response={"details": [], "message": "Invalid reply token"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': '3972e848-faa5-4991-ad4c-f98e086ad802', 'x-xss-protection': '1; mode=block', 'Content-Length': '33', 'Expires': 'Thu, 12 Mar 2026 10:01:16 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Thu, 12 Mar 2026 10:01:16 GMT', 'Connection': 'close'}
+127.0.0.1 - - [12/Mar/2026 18:01:16] "[35m[1mPOST /callback HTTP/1.1[0m" 500 -
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:409: LineBotSdkDeprecatedIn30: Call to deprecated method reply_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).reply_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response.text))
+127.0.0.1 - - [12/Mar/2026 18:01:17] "POST /callback HTTP/1.1" 200 -
+/Volumes/Work_Drive/東方森煌共用/Senhuang_linebot/app.py:334: LineBotSdkDeprecatedIn30: Call to deprecated method reply_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).reply_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
+127.0.0.1 - - [12/Mar/2026 18:02:06] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 18:02:12] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 18:02:16] "POST /callback HTTP/1.1" 200 -
+127.0.0.1 - - [12/Mar/2026 18:02:20] "POST /callback HTTP/1.1" 200 -

@@ -1,0 +1,32 @@
+nohup: gunicorn: No such file or directory
+2026-01-26T10:31:22Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
+2026-01-26T10:31:22Z INF Requesting new quick Tunnel on trycloudflare.com...
+2026-01-26T10:31:25Z INF +--------------------------------------------------------------------------------------------+
+2026-01-26T10:31:25Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+2026-01-26T10:31:25Z INF |  https://suggested-context-automobile-keys.trycloudflare.com                               |
+2026-01-26T10:31:25Z INF +--------------------------------------------------------------------------------------------+
+2026-01-26T10:31:25Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
+2026-01-26T10:31:25Z INF Version 2026.1.1 (Checksum b380481c457f8ab844962b2cc8689842888ffe44db7b04a9cfb7ad6fefe27113)
+2026-01-26T10:31:25Z INF GOOS: darwin, GOVersion: go1.25.6, GoArch: amd64
+2026-01-26T10:31:25Z INF Settings: map[ha-connections:1 protocol:quic url:http://localhost:5000]
+2026-01-26T10:31:25Z INF cloudflared will not automatically update if installed by a package manager.
+2026-01-26T10:31:25Z INF Generated Connector ID: 27743e70-c3b7-4b9c-9d87-3ae52cb658b0
+2026-01-26T10:31:25Z INF Initial protocol quic
+2026-01-26T10:31:25Z INF ICMP proxy will use 192.168.1.200 as source for IPv4
+2026-01-26T10:31:25Z INF ICMP proxy will use fe80::14f9:5258:d201:519b in zone en0 as source for IPv6
+2026-01-26T10:31:25Z INF Created ICMP proxy listening on 192.168.1.200:0
+2026-01-26T10:31:25Z INF ICMP proxy will use 192.168.1.200 as source for IPv4
+2026-01-26T10:31:25Z INF ICMP proxy will use fe80::14f9:5258:d201:519b in zone en0 as source for IPv6
+2026-01-26T10:31:25Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2026-01-26T10:31:25Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2026/01/26 18:31:25 failed to increase receive buffer size (wanted: 7168 kiB, got 768 kiB). See https://github.com/quic-go/quic-go/wiki/UDP-Buffer-Sizes for details.
+2026-01-26T10:31:26Z INF Registered tunnel connection connIndex=0 connection=60addb39-4891-47b8-8545-be79cf027020 event=0 ip=198.41.200.193 location=tpe01 protocol=quic
+2026-01-26T10:32:34Z INF Initiating graceful shutdown due to signal terminated ...
+2026-01-26T10:32:34Z ERR failed to run the datagram handler error="Application error 0x0 (remote)" connIndex=0 event=0 ip=198.41.200.193
+2026-01-26T10:32:34Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-01-26T10:32:34Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-01-26T10:32:34Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.193
+2026-01-26T10:32:34Z ERR Connection terminated connIndex=0
+2026-01-26T10:32:34Z ERR no more connections active and exiting
+2026-01-26T10:32:34Z INF Tunnel server stopped
+2026-01-26T10:32:34Z INF Metrics server stopped
