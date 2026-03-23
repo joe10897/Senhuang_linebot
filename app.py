@@ -300,6 +300,14 @@ model = genai.GenerativeModel(
 # ==========================================
 # 4. Webhook 入口
 # ==========================================
+@app.route("/intro")
+def intro():
+    try:
+        with open("intro.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        return f"Error loading intro.html: {e}", 404
+
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
