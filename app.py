@@ -158,6 +158,9 @@ user_status = {}
 chat_sessions = {}
 # 暫存用戶上傳的照片 (防呆機制)
 user_images = {}
+# 記錄每月使用次數: 格式 {(user_id, year, month): 使用次數}
+usage_count = {}
+MONTHLY_LIMIT = 8
 
 # ==========================================
 # 3. Gemini 模型設定 (東方森煌專屬人設)
@@ -263,9 +266,8 @@ SYSTEM_PROMPT = """
 # Response Format (標準回覆格式)
 當使用者傳送照片與文字時，請嚴格依照以下結構依序回覆，不可省略：
 ---
-## 1. 系統警語與免責聲明 (固定輸出，字數不漏)
+## 1. 系統提醒與免責聲明 (固定輸出，字數不漏)
 「歡迎使用智能文物健檢 (A.A.D)！
-⚠️ 警語：AI 文物健檢乃基於 Gemini 資料庫以及市場化資訊，仍有較高誤差值，不具任何鑑定效益，僅供藏家初步過濾使用。
 📌 提醒：為了確保分析準確，請確認您單次上傳的一組照片，皆屬於『同一件物件』。」
 
 ## 2. 物件特徵初步分析
@@ -286,6 +288,9 @@ SYSTEM_PROMPT = """
 回覆文案：「此物件特徵好壞參半。若您對此物件有特殊情感或想進一步釐清，可考慮預約實體送檢。」
 * 狀況 C (真品機率 < 50%)：不建議送檢。
 回覆文案：「此物件的現代工藝或仿製特徵較為明顯，目前不建議您花費成本進行實體送檢。建議作為一般工藝品欣賞即可。」
+
+## 6. 系統警語 (固定輸出，放在整篇回覆最末)
+「⚠️ 警語：A.D.D. 乃基於 Gemini 全球資料庫以及市場實戰調校，然僅以照片判斷仍有一定誤差。雖優於個人 AI 客觀性，但尚不具備完整鑑定效益，僅供過濾及輔助使用。」
 """
 
 model = genai.GenerativeModel(
@@ -373,6 +378,18 @@ def handle_message(event):
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
                 return
             
+            # ---- 月度使用額度檢查 ----
+            from datetime import datetime
+            now = datetime.now()
+            usage_key = (user_id, now.year, now.month)
+            current_usage = usage_count.get(usage_key, 0)
+            if current_usage >= MONTHLY_LIMIT:
+                line_bot_api.reply_message(
+                    event.reply_token,
+                    TextSendMessage(text="⚠️ 您已經用完本月額度，請待次月或訂閱取得進階版。")
+                )
+                return
+            
             try:
                 # 告知用戶正在處理
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="🔍 A.A.D 系統正在分析您的照片，請稍候..."))
@@ -391,8 +408,13 @@ def handle_message(event):
                 # 清空該用戶的暫存照片
                 user_images[user_id] = []
                 
+                # ---- 扣除本月使用次數 ----
+                usage_count[usage_key] = current_usage + 1
+                remaining = MONTHLY_LIMIT - usage_count[usage_key]
+                
                 # 回傳分析結果 (此處使用 push_message，因為 reply_token 可能已被上面的「處理中」用掉)
-                line_bot_api.push_message(user_id, TextSendMessage(text=response.text))
+                result_text = response.text + f"\n\n---\n📊 本月剩餘健檢次數：{remaining} / {MONTHLY_LIMIT}"
+                line_bot_api.push_message(user_id, TextSendMessage(text=result_text))
                 return
                 
             except Exception as e:
@@ -439,14 +461,48 @@ def handle_image(event):
                 "mime_type": "image/jpeg",
                 "data": image_bytes
             }
+
+            # ==========================================
+            # 🔍 第一層防護：照片類別篩選
+            # 使用輕量 Gemini 呼叫判斷是否為可鑑定物件
+            # ==========================================
+            screening_prompt = """你是一個嚴格的物件分類器。請判斷圖片中的主體是否屬於以下可鑑定的類別：
+古董/文物/古玉器/佛牌/陶瓷/瓷器/青銅器/金屬器/法器/佛像/古錢幣/器皿/藝術雕件
+
+只能回覆以下兩種格式之一，不可有任何其他文字：
+合格
+不合格：[一句話說明原因]"""
+            try:
+                screening_model = genai.GenerativeModel(
+                    model_name="gemini-2.0-flash",
+                    generation_config={"temperature": 0.0, "max_output_tokens": 50}
+                )
+                screen_resp = screening_model.generate_content([screening_prompt, image_part])
+                result_text = screen_resp.text.strip()
+            except Exception as screen_err:
+                print(f"Screening Error (pass-through): {screen_err}")
+                result_text = "合格"  # 篩選失敗時放行，避免誤傷正常用戶
+
+            if not result_text.startswith("合格"):
+                # 取出不合格原因（移除「不合格：」前綴）
+                reason = result_text.replace("不合格：", "").replace("不合格:", "").strip()
+                reject_msg = (
+                    f"❌ 照片未通過篩選\n\n"
+                    f"原因：{reason}\n\n"
+                    f"本系統目前僅接受「古玉器、佛牌、古陶瓷、古銅器、金銅佛像」等文物照片。\n"
+                    f"請重新上傳符合類別的物件照片，本次不扣除健檢次數。"
+                )
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reject_msg))
+                return
+            # ==========================================
             
-            # 將照片存入該用戶的暫存區
+            # 照片通過篩選，存入該用戶的暫存區
             if user_id not in user_images:
                 user_images[user_id] = []
             user_images[user_id].append(image_part)
             
             # 防呆回覆：不馬上鑑定，等待用戶確認
-            msg = f"✅ 已收到照片 (目前共 {len(user_images[user_id])} 張)。\n\n請問還有其他角度（如底部、特寫）的照片嗎？\n\n若已傳送完畢，請輸入『開始健檢』。"
+            msg = f"✅ 照片已通過類別篩選並收到 (目前共 {len(user_images[user_id])} 張)。\n\n請問還有其他角度（如底部、特寫）的照片嗎？\n\n若已傳送完畢，請輸入『開始健檢』。"
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
             
         except Exception as e:
