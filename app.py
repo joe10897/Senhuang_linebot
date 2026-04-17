@@ -312,7 +312,14 @@ def handle_message(event):
     current_mode = user_status.get(user_id, "HUMAN")
 
     if current_mode == "HUMAN":
-        # 人工模式下：程式完全閉嘴，讓真人透過 LINE 後台回覆
+        # 「開始健檢」特例：提示用戶先啟動 AI 服務
+        if user_msg == "開始健檢":
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="⚠️ 請先點選選單中的「AI文物健檢」以啟動服務，再上傳照片並輸入『開始健檢』。")
+            )
+            return
+        # 其他訊息：人工模式下完全靜音，讓真人透過 LINE 後台回覆
         print(f"人工模式中，忽略訊息: {user_msg}")
         return
 
@@ -344,7 +351,10 @@ def handle_message(event):
                 prompt = "請根據這些照片，嚴格依照【AI文物健檢規則與原則】與【Response Format】進行分析。"
                 payload = [prompt] + user_images[user_id]
                 
-                response = model.generate_content(payload)
+                response = model.generate_content(
+                    payload,
+                    request_options={"timeout": 55}  # 55秒後強制停止，避免 Gunicorn worker 被 SIGKILL
+                )
                 
                 # 清空該用戶的暫存照片
                 user_images[user_id] = []
