@@ -294,7 +294,7 @@ SYSTEM_PROMPT = """
 """
 
 model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
+    model_name="gemini-2.0-flash",
     generation_config={
         "temperature": 0.2, # 低隨機性，保持專業
         "max_output_tokens": 2048,
@@ -462,9 +462,14 @@ def handle_image(event):
                 "data": image_bytes
             }
 
+            # ✅ 立刻消耗 reply_token，避免篩選 API 耗時導致 token 過期
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text="📥 照片接收中，正在進行類別篩選，請稍候...")
+            )
+
             # ==========================================
-            # 🔍 第一層防護：照片類別篩選
-            # 使用輕量 Gemini 呼叫判斷是否為可鑑定物件
+            # 🔍 第一層防護：照片類別篩選（reply_token 已用完，改用 push_message）
             # ==========================================
             screening_prompt = """你是一個嚴格的物件分類器。請判斷圖片中的主體是否屬於以下可鑑定的類別：
 古董/文物/古玉器/佛牌/陶瓷/瓷器/青銅器/金屬器/法器/佛像/古錢幣/器皿/藝術雕件
@@ -484,7 +489,6 @@ def handle_image(event):
                 result_text = "合格"  # 篩選失敗時放行，避免誤傷正常用戶
 
             if not result_text.startswith("合格"):
-                # 取出不合格原因（移除「不合格：」前綴）
                 reason = result_text.replace("不合格：", "").replace("不合格:", "").strip()
                 reject_msg = (
                     f"❌ 照片未通過篩選\n\n"
@@ -492,22 +496,23 @@ def handle_image(event):
                     f"本系統目前僅接受「古玉器、佛牌、古陶瓷、古銅器、金銅佛像」等文物照片。\n"
                     f"請重新上傳符合類別的物件照片，本次不扣除健檢次數。"
                 )
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reject_msg))
+                line_bot_api.push_message(user_id, TextSendMessage(text=reject_msg))
                 return
             # ==========================================
-            
+
             # 照片通過篩選，存入該用戶的暫存區
             if user_id not in user_images:
                 user_images[user_id] = []
             user_images[user_id].append(image_part)
-            
-            # 防呆回覆：不馬上鑑定，等待用戶確認
+
+            # 篩選通過後，用 push_message 通知結果
             msg = f"✅ 照片已通過類別篩選並收到 (目前共 {len(user_images[user_id])} 張)。\n\n請問還有其他角度（如底部、特寫）的照片嗎？\n\n若已傳送完畢，請輸入『開始健檢』。"
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
-            
+            line_bot_api.push_message(user_id, TextSendMessage(text=msg))
+
         except Exception as e:
             print(f"Image Receive Error: {e}")
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="抱歉，圖片接收失敗，請重新傳送。"))
+
+
 
 # ==========================================
 # 6. 啟動伺服器
