@@ -394,16 +394,11 @@ def handle_message(event):
                 # 告知用戶正在處理
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="🔍 A.A.D 系統正在分析您的照片，請稍候..."))
                 
-                # 取得或建立 Session
-                if user_id not in chat_sessions:
-                    chat_sessions[user_id] = model.start_chat(history=[])
-                chat = chat_sessions[user_id]
-                
-                # 將所有暫存照片與指令一起發送給 Gemini
+                # 圖片分析改用 generate_content（chat session 不穩定支援 image parts）
                 prompt = "請根據這些照片，嚴格依照【AI文物健檢規則與原則】與【Response Format】進行分析。"
                 payload = [prompt] + user_images[user_id]
                 
-                response = chat.send_message(payload)
+                response = model.generate_content(payload)
                 
                 # 清空該用戶的暫存照片
                 user_images[user_id] = []
@@ -412,13 +407,15 @@ def handle_message(event):
                 usage_count[usage_key] = current_usage + 1
                 remaining = MONTHLY_LIMIT - usage_count[usage_key]
                 
-                # 回傳分析結果 (此處使用 push_message，因為 reply_token 可能已被上面的「處理中」用掉)
+                # 回傳分析結果
                 result_text = response.text + f"\n\n---\n📊 本月剩餘健檢次數：{remaining} / {MONTHLY_LIMIT}"
                 line_bot_api.push_message(user_id, TextSendMessage(text=result_text))
                 return
                 
             except Exception as e:
+                import traceback
                 print(f"Gemini Analysis Error: {e}")
+                print(traceback.format_exc())
                 line_bot_api.push_message(user_id, TextSendMessage(text="抱歉，A.A.D 系統分析過程中發生錯誤，請稍後再試。"))
                 # 發生錯誤也清空暫存，避免卡死
                 user_images[user_id] = []
