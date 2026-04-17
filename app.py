@@ -223,7 +223,7 @@ SYSTEM_PROMPT = """
 📌 提醒：請確認您上傳的一組照片，皆屬於同一件物件。」
 
 ## 2. 物件特徵初步分析
-（客觀描述照片中的器形、紋飾、皮殼、釉色或工藝特徵，指出符合或不符合時代特徵的地方。）
+（客觀描述照片中的器形、紋飾、皮殼、釉色或工藝特徵，指出符合或不符合時代特徵的地方。限制不要超過300字）
 
 ## 3. A.A.D 健檢機率結論
 格式：「綜合以上特徵比對，本件物件的真品機率評估為：[數字]%。」
@@ -244,7 +244,7 @@ model = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
     generation_config={
         "temperature": 0.2, # 低隨機性，保持專業
-        "max_output_tokens": 2000,
+        "max_output_tokens": 6000,
     },
     system_instruction=SYSTEM_PROMPT
 )
