@@ -241,7 +241,7 @@ SYSTEM_PROMPT = """
 """
 
 model = genai.GenerativeModel(
-    model_name="gemini-3-flash",
+    model_name="gemini-2.0-flash-lite-preview-02-05",
     generation_config={
         "temperature": 0.2, # 低隨機性，保持專業
         "max_output_tokens": 3000,
