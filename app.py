@@ -308,9 +308,8 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
         return
 
-    # 3. 核心邏輯 (預設就是 AI)
-    # 如果字典裡找不到這個人，預設值就是 "AI"
-    current_mode = user_status.get(user_id, "AI")
+    # 3. 核心邏輯：預設為 HUMAN（靜音），需主動點選「AI文物健檢」才啟用 AI
+    current_mode = user_status.get(user_id, "HUMAN")
 
     if current_mode == "HUMAN":
         # 人工模式下：程式完全閉嘴，讓真人透過 LINE 後台回覆
@@ -390,7 +389,7 @@ def handle_message(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
     user_id = event.source.user_id
-    current_mode = user_status.get(user_id, "AI")
+    current_mode = user_status.get(user_id, "HUMAN")
 
     if current_mode == "AI":
         try:
