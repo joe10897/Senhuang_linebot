@@ -262,14 +262,28 @@ def intro():
 
 @app.route("/callback", methods=['POST'])
 def callback():
+    import threading
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
 
+    # 快速驗證簽名
     try:
-        handler.handle(body, signature)
-    except InvalidSignatureError:
+        from linebot.utils import check_signature
+        if not check_signature(body, LINE_CHANNEL_SECRET, signature):
+            abort(400)
+    except Exception:
         abort(400)
+
+    # 在背景執行緒處理事件，立刻回傳 200 給 LINE
+    # 這樣 LINE 不會因為 Gemini API 耗時而重送 webhook
+    def process():
+        try:
+            handler.handle(body, signature)
+        except Exception as e:
+            app.logger.error(f"Background handler error: {e}")
+
+    threading.Thread(target=process, daemon=True).start()
     return 'OK'
 
 # ==========================================
@@ -288,7 +302,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, flex_msg)
         return
     # 1. 偵測是否要「切換人工」 (配合你的圖文選單按鈕)
-    if user_msg in ["人工預約", "人工客服", "專人服務"]:
+    if user_msg in ["人工預約", "人工客服", "專人服務","真人客服"]:
         user_status[user_id] = "HUMAN"
         msg = "👨‍💼 已為您轉接人工預約服務。\n\n請直接留言您的需求，我們會盡快回覆您。\n\n(若需回到 AI 模式，請點擊選單「AI文物健檢」)"
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
