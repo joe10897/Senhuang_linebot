@@ -267,19 +267,13 @@ def callback():
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
 
-    # 快速驗證簽名
-    try:
-        from linebot.utils import check_signature
-        if not check_signature(body, LINE_CHANNEL_SECRET, signature):
-            abort(400)
-    except Exception:
-        abort(400)
-
     # 在背景執行緒處理事件，立刻回傳 200 給 LINE
     # 這樣 LINE 不會因為 Gemini API 耗時而重送 webhook
     def process():
         try:
             handler.handle(body, signature)
+        except InvalidSignatureError:
+            app.logger.error("Invalid webhook signature")
         except Exception as e:
             app.logger.error(f"Background handler error: {e}")
 
