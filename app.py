@@ -209,7 +209,7 @@ SYSTEM_PROMPT = """
 
 # 拒絕條款
 若照片明顯不屬於可鑑定範疇（如人體照片、書畫字帖、現代珠寶鑽石、鑑定報告文件等），請直接回覆：
-「⚠️ 本系統僅針對古玉器、佛牌、古陶瓷、古銅器進行健檢，您上傳的照片不在可分析範疇內，本次健檢取消，不扣除額度。」
+「您所上傳的照片不在檢測項目內，請重新上傳其他照片，或洽真人客服。」
 
 # Core Rules
 1. 【絕對禁語】：絕不直接下達「這是真品」或「這是贗品」的絕對性結論。
@@ -241,7 +241,7 @@ SYSTEM_PROMPT = """
 """
 
 model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
+    model_name="gemini-2.5-flash",
     generation_config={
         "temperature": 0.2, # 低隨機性，保持專業
         "max_output_tokens": 1200,
