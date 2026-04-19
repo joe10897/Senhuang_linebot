@@ -572,24 +572,17 @@ def handle_message(event):
                 user_images[user_id] = []
                 return
 
-        # 一般文字問答邏輯
-        try:
-            # 取得或建立該用戶的對話 Session
-            if user_id not in chat_sessions:
-                chat_sessions[user_id] = model.start_chat(history=[])
-            
-            chat = chat_sessions[user_id]
-            
-            # 發送給 Gemini
-            response = chat.send_message(user_msg)
-            
-            # 回傳 Gemini 的答案
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response.text))
+        # 將用戶輸入的文字視為物件說明加入暫存
+        if user_id not in user_images:
+            user_images[user_id] = []
+        user_images[user_id].append(user_msg)
         
-        except Exception as e:
-            print(f"Gemini Error: {e}")
-            # 遇到錯誤時的優雅回覆
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="抱歉，我正在整理思緒中，請再問一次。"))
+        # 統計目前暫存庫內數量
+        img_count = sum(1 for item in user_images[user_id] if isinstance(item, dict))
+        text_count = sum(1 for item in user_images[user_id] if isinstance(item, str))
+        
+        msg = f"📝 已收到您的文字說明 (目前暫存 {img_count} 張照片, {text_count} 則說明)。\n\n請問還有其他要補充的照片或描述嗎？\n若已傳送完畢，請輸入『開始健檢』。"
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
 
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
@@ -615,8 +608,12 @@ def handle_image(event):
                 user_images[user_id] = []
             user_images[user_id].append(image_part)
 
+            # 統計目前暫存庫內數量
+            img_count = sum(1 for item in user_images[user_id] if isinstance(item, dict))
+            text_count = sum(1 for item in user_images[user_id] if isinstance(item, str))
+
             # 立刻回覆確認（不做額外 AI 呼叫）
-            msg = f"✅ 已收到照片 (目前共 {len(user_images[user_id])} 張)。\n\n請問還有其他角度（如底部、特寫）的照片嗎？\n\n若已傳送完畢，請輸入『開始健檢』。"
+            msg = f"✅ 已收到照片 (目前暫存 {img_count} 張照片, {text_count} 則說明)。\n\n請問還有其他角度（如底部、特寫）或文字補充嗎？\n若已傳送完畢，請輸入『開始健檢』。"
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
 
         except Exception as e:
