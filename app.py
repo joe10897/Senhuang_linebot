@@ -347,8 +347,13 @@ def buy(user_id, plan_id):
     # 將 user_id 和 plan_id 用 "|" 符號裝進 CustomField1 內傳遞給綠界
     custom_field = f"{user_id}|{plan_id}"
     
-    # 動態取得伺服器域名作為 Return URL
-    host = request.host_url.rstrip("/")
+    # 動態取得伺服器域名作為 Return URL (必須是 HTTPS，否則綠界不會發送 webhook)
+    railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+    if railway_domain:
+        host = f"https://{railway_domain}"
+    else:
+        host = request.host_url.rstrip("/")
+        
     return_url = f"{host}/ecpay/return"
     client_back_url = "line://app" 
     
