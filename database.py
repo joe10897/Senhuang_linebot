@@ -28,6 +28,12 @@ def init_db():
                     usage_count INTEGER DEFAULT 0
                 )
             ''')
+            # 擴充新欄位: 購買額度
+            cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS purchased_quota INTEGER DEFAULT 0;")
+            # 擴充新欄位: 會員等級
+            cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_tier TEXT DEFAULT 'FREE';")
+            # 擴充新欄位: 訂閱到期日
+            cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_expiry TEXT;")
         conn.commit()
         print("Database initialized successfully.")
     except Exception as e:
@@ -65,46 +71,133 @@ def set_user_mode(user_id, mode):
     finally:
         conn.close()
 
-def get_usage(user_id, month_str):
+def get_user_status_data(user_id, month_str):
+    """取得用戶詳細狀態、月用量與相關配額，用於主邏輯判斷"""
     conn = get_connection()
     if not conn:
-        return 0
+        return {"tier": "FREE", "free_limit": 3, "usage": 0, "purchased": 0, "current_mode": "HUMAN"}
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT usage_month, usage_count FROM users WHERE user_id = %s", (user_id,))
+            # 確認用戶存在
+            cur.execute("SELECT current_mode, usage_month, usage_count, purchased_quota, subscription_tier, subscription_expiry FROM users WHERE user_id = %s", (user_id,))
             row = cur.fetchone()
             
-            if row:
-                if row['usage_month'] == month_str:
-                    return row['usage_count'] or 0
-                else:
-                    # 跨月了，額度歸零
-                    cur.execute("UPDATE users SET usage_month = %s, usage_count = 0 WHERE user_id = %s", (month_str, user_id))
-                    conn.commit()
-                    return 0
-            else:
-                # 新用戶，沒有記錄
-                return 0
+            if not row:
+                return {"tier": "FREE", "free_limit": 3, "usage": 0, "purchased": 0, "current_mode": "HUMAN"}
+            
+            tier = row['subscription_tier'] or 'FREE'
+            expiry = row['subscription_expiry']
+            
+            import datetime
+            if expiry:
+                try:
+                    exp_date = datetime.datetime.strptime(expiry, '%Y-%m-%d %H:%M:%S')
+                    if datetime.datetime.now() > exp_date:
+                        tier = 'FREE' # 過期退回 FREE
+                except:
+                    pass
+
+            # 計算當前等級的免費上限
+            limits = {'FREE': 3, 'BASIC': 15, 'ADVANCED': 100, 'BUSINESS': 1000}
+            free_limit = limits.get(tier, 3)
+
+            # 跨月重置邏輯
+            usage = row['usage_count'] or 0
+            if row['usage_month'] != month_str:
+                usage = 0
+                cur.execute("UPDATE users SET usage_month = %s, usage_count = 0 WHERE user_id = %s", (month_str, user_id))
+                conn.commit()
+
+            return {
+                "tier": tier,
+                "free_limit": free_limit,
+                "usage": usage,
+                "purchased": row['purchased_quota'] or 0,
+                "current_mode": row['current_mode'] or "HUMAN",
+                "expiry": expiry
+            }
     finally:
         conn.close()
 
-def increment_usage(user_id, month_str):
+def consume_quota(user_id, month_str):
+    """
+    動態扣除額度 (優先扣月免費、再扣買斷額度)
+    回傳: (is_success, 剩餘月免費用量, 剩餘買斷額度)
+    """
+    conn = get_connection()
+    if not conn:
+        return (False, 0, 0)
+    try:
+        # 先取得狀態
+        data = get_user_status_data(user_id, month_str)
+        free_limit = int(data.get("free_limit", 3))
+        usage = int(data.get("usage", 0))
+        purchased = int(data.get("purchased", 0))
+        
+        # 1. 判斷是否有免費額度可扣
+        if usage < free_limit:
+            new_usage = usage + 1
+            new_purchased = purchased
+        # 2. 無料可扣，判斷是否有付費額度可扣
+        elif purchased > 0:
+            new_usage = usage
+            new_purchased = purchased - 1
+        # 3. 皆無額度
+        else:
+            return (False, 0, 0)
+
+        # 更新資料庫
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE users 
+                SET usage_count = %s, purchased_quota = %s
+                WHERE user_id = %s
+            """, (new_usage, new_purchased, user_id))
+        conn.commit()
+        
+        return (True, max(0, free_limit - new_usage), new_purchased)
+    finally:
+        conn.close()
+
+def add_purchased_quota(user_id, amount):
+    """由綠界 Webhook 若訂單是購買單次額度時呼叫"""
     conn = get_connection()
     if not conn:
         return
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO users (user_id, usage_month, usage_count)
-                VALUES (%s, %s, 1)
+                INSERT INTO users (user_id, purchased_quota)
+                VALUES (%s, %s)
+                ON CONFLICT (user_id) 
+                DO UPDATE SET purchased_quota = users.purchased_quota + EXCLUDED.purchased_quota
+            """, (user_id, amount))
+        conn.commit()
+    finally:
+        conn.close()
+
+def update_subscription(user_id, tier, expiry_str_or_add_months=1):
+    """由綠界 Webhook 若訂單是訂閱/包月時呼叫"""
+    import datetime
+    
+    conn = get_connection()
+    if not conn:
+        return
+    try:
+        with conn.cursor() as cur:
+            # 簡單實作：目前直接把時間往後加一個月 (30天)
+            now = datetime.datetime.now()
+            next_month = now + datetime.timedelta(days=30)
+            expiry_str = next_month.strftime('%Y-%m-%d %H:%M:%S')
+
+            cur.execute("""
+                INSERT INTO users (user_id, subscription_tier, subscription_expiry)
+                VALUES (%s, %s, %s)
                 ON CONFLICT (user_id) 
                 DO UPDATE SET 
-                    usage_month = EXCLUDED.usage_month,
-                    usage_count = CASE 
-                        WHEN users.usage_month = EXCLUDED.usage_month THEN users.usage_count + 1 
-                        ELSE 1 
-                    END
-            """, (user_id, month_str))
+                    subscription_tier = EXCLUDED.subscription_tier,
+                    subscription_expiry = EXCLUDED.subscription_expiry
+            """, (user_id, tier, expiry_str))
         conn.commit()
     finally:
         conn.close()

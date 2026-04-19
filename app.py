@@ -133,6 +133,52 @@ def get_price_flex():
         alt_text="東方森煌價目表",
         contents=CarouselContainer(contents=[bubble_1, bubble_2, bubble_3])
     )
+
+def get_subscription_flex(host, user_id):
+    """產生包含 ECPay 付款連結的多層級訂閱方案 Flex Message"""
+    from linebot.models import URIAction, ButtonComponent
+    
+    def make_plan_bubble(color, title, desc1, desc2, price, price_desc, plan_id):
+        payment_url = f"{host}/buy/{user_id}/{plan_id}"
+        return BubbleContainer(
+            header=BoxComponent(
+                layout='vertical',
+                background_color=color,
+                contents=[TextComponent(text=title, weight='bold', size='xl', color='#ffffff')]
+            ),
+            body=BoxComponent(
+                layout='vertical',
+                contents=[
+                    TextComponent(text=desc1, weight='bold', size='md', color=color),
+                    TextComponent(text=desc2, size='sm', color='#555555', wrap=True),
+                    SeparatorComponent(margin='md'),
+                    BoxComponent(layout='baseline', margin='md', contents=[
+                        TextComponent(text=price, size='lg', weight='bold', color='#111111', flex=1),
+                        TextComponent(text=price_desc, size='xs', color='#aaaaaa', align='end', flex=1)
+                    ]),
+                ]
+            ),
+            footer=BoxComponent(
+                layout='vertical',
+                contents=[
+                    ButtonComponent(
+                        style='primary',
+                        color=color,
+                        action=URIAction(label='前往付款', uri=payment_url)
+                    )
+                ]
+            )
+        )
+
+    b1 = make_plan_bubble('#f39c12', '🪙 單筆儲值', '10 次健檢點數', '永久有效，不會過期', 'NT$ 100', '一次購買', 'point10')
+    b2 = make_plan_bubble('#27ae60', '🌱 小資玩家', '單月 15 次健檢', '人工鑑定單次折 100 元', 'NT$ 120', '買斷30天', 'basic_single')
+    b3 = make_plan_bubble('#2980b9', '👑 進階藏家', '單月 100 次健檢', '人工鑑定單次折 200 元', 'NT$ 500', '買斷30天', 'advanced_single')
+    b4 = make_plan_bubble('#8e44ad', '💎 商務旗艦', '單月 1000 次', '人工鑑定單次折 300 元', 'NT$ 1500', '買斷30天', 'business_single')
+
+    return FlexSendMessage(
+        alt_text="東方森煌館 付費與訂閱方案",
+        contents=CarouselContainer(contents=[b1, b2, b3, b4])
+    )
 app = Flask(__name__)
 
 from dotenv import load_dotenv
@@ -279,6 +325,75 @@ def callback():
     threading.Thread(target=process, daemon=True).start()
     return 'OK'
 
+@app.route("/buy/<user_id>/<plan_id>")
+def buy(user_id, plan_id):
+    plans = {
+        "point10": {"amount": 100, "desc": "購買 10 次健檢額度點數"},
+        "basic_single": {"amount": 120, "desc": "訂閱單月 小資玩家 (15次/月)"},
+        "advanced_single": {"amount": 500, "desc": "訂閱單月 進階藏家 (100次/月)"},
+        "business_single": {"amount": 1500, "desc": "訂閱單月 商務旗艦 (1000次/月)"}
+    }
+    if plan_id not in plans:
+        return "Invalid Plan", 400
+    
+    amount = plans[plan_id]["amount"]
+    desc = plans[plan_id]["desc"]
+    
+    import uuid
+    import ecpay_integration
+    # MerchantTradeNo 綠界規定必須唯一且最長20碼
+    order_id = "AAD" + uuid.uuid4().hex[:17]
+    
+    # 將 user_id 和 plan_id 用 "|" 符號裝進 CustomField1 內傳遞給綠界
+    custom_field = f"{user_id}|{plan_id}"
+    
+    # 動態取得伺服器域名作為 Return URL
+    host = request.host_url.rstrip("/")
+    return_url = f"{host}/ecpay/return"
+    client_back_url = "line://app" 
+    
+    html = ecpay_integration.generate_ecpay_html_form(
+        order_id, custom_field, amount, desc, return_url, client_back_url
+    )
+    return html
+
+@app.route("/ecpay/return", methods=["POST"])
+def ecpay_return():
+    import ecpay_integration
+    import database
+    
+    if not ecpay_integration.verify_ecpay_callback(request.form):
+        return "0|CheckMacValue Error", 400
+        
+    rtn_code = request.form.get("RtnCode")
+    if rtn_code == "1":
+        # 交易成功
+        custom_field = request.form.get("CustomField1", "")
+        parts = custom_field.split("|")
+        if len(parts) == 2:
+            user_id, plan_id = parts
+            
+            if plan_id == "point10":
+                database.add_purchased_quota(user_id, 10)
+                msg_text = "🎉 感謝購買！您的 10 次額度已入帳 (永久有效)。\n現在您可以繼續傳送照片進行智能文物健檢！"
+            elif plan_id == "basic_single":
+                database.update_subscription(user_id, "BASIC")
+                msg_text = "🎉 感謝訂閱！升級為「小資玩家」，本月擁有 15 次智能健檢，且人工鑑定折抵 100 元！"
+            elif plan_id == "advanced_single":
+                database.update_subscription(user_id, "ADVANCED")
+                msg_text = "🎉 感謝訂閱！升級為「進階藏家」，本月擁有 100 次智能健檢，且人工鑑定折抵 200 元！"
+            elif plan_id == "business_single":
+                database.update_subscription(user_id, "BUSINESS")
+                msg_text = "🎉 感謝訂閱！升級為「商務旗艦」，本月擁有 1000 次智能健檢，且人工鑑定折抵 300 元！"
+            
+            # 主動推播給消費者
+            try:
+                line_bot_api.push_message(user_id, TextSendMessage(text=msg_text))
+            except Exception as e:
+                app.logger.error(f"Push message failed: {e}")
+                
+    return "1|OK"
+
 # ==========================================
 # 5. 訊息處理邏輯
 # ==========================================
@@ -292,6 +407,13 @@ def handle_message(event):
     price_keywords = ["收費", "費用", "價錢", "價目", "多少錢", "價格"]
     if any(k in user_msg for k in price_keywords):
         flex_msg = get_price_flex() # 呼叫剛剛寫好的函式
+        line_bot_api.reply_message(event.reply_token, flex_msg)
+        return
+        
+    buy_keywords = ["購買", "儲值", "點數", "方案", "付費", "訂閱"]
+    if any(k in user_msg for k in buy_keywords):
+        host = request.host_url.rstrip("/")
+        flex_msg = get_subscription_flex(host, user_id)
         line_bot_api.reply_message(event.reply_token, flex_msg)
         return
     # 1. 偵測是否要「切換人工」 (配合你的圖文選單按鈕)
@@ -338,23 +460,34 @@ def handle_message(event):
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text="❌ 您尚未上傳任何照片。\n\n請先傳送物件照片，再輸入『開始健檢』。"))
                 return
             
-            # ---- 月度使用額度檢查 ----
+            # ---- 額度檢查 ----
             from datetime import datetime
             now = datetime.now()
             month_str = f"{now.year}-{now.month:02d}"
-            current_usage = database.get_usage(user_id, month_str)
-            if current_usage >= MONTHLY_LIMIT:
+            
+            user_state = database.get_user_status_data(user_id, month_str)
+            free_limit = int(user_state.get('free_limit', 3))
+            usage = int(user_state.get('usage', 0))
+            purchased = int(user_state.get('purchased', 0))
+            tier = user_state.get('tier', 'FREE')
+            
+            if usage >= free_limit and purchased <= 0:
+                host = request.host_url.rstrip("/")
+                flex_msg = get_subscription_flex(host, user_id)
                 line_bot_api.reply_message(
                     event.reply_token,
-                    TextSendMessage(text="⚠️ 您已經用完本月額度，請待次月或訂閱取得進階版。")
+                    [
+                        TextSendMessage(text="⚠️ 您的健檢額度已用盡，請參考以下方案擴充您的額度："),
+                        flex_msg
+                    ]
                 )
                 return
             
             try:
                 # 告知用戶正在處理
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="🔍 A.A.D 系統正在分析您的照片，請稍候..."))
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"🔍 系統正在分析您的照片，請稍候... (您的方案：{tier})"))
                 
-                # 圖片分析改用 generate_content（chat session 不穩定支援 image parts）
+                # 圖片分析改用 generate_content
                 prompt = "請根據這些照片，嚴格依照【AI文物健檢規則與原則】與【Response Format】進行分析。"
                 payload = [prompt] + user_images[user_id]
                 
@@ -366,12 +499,11 @@ def handle_message(event):
                 # 清空該用戶的暫存照片
                 user_images[user_id] = []
                 
-                # ---- 扣除本月使用次數 ----
-                database.increment_usage(user_id, month_str)
-                remaining = MONTHLY_LIMIT - (current_usage + 1)
+                # ---- 實際扣除使用次數 ----
+                success, rem_free, rem_purchased = database.consume_quota(user_id, month_str)
                 
                 # 回傳分析結果
-                result_text = response.text + f"\n\n---\n📊 本月剩餘健檢次數：{remaining} / {MONTHLY_LIMIT}"
+                result_text = response.text + f"\n\n---\n📊 目前剩餘可健檢額度：\n🎁 本月免費/訂閱額度：{rem_free} 次\n🪙 單筆儲值備用點數：{rem_purchased} 點"
                 line_bot_api.push_message(user_id, TextSendMessage(text=result_text))
                 return
                 
