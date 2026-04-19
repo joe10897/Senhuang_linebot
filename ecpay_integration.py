@@ -2,10 +2,10 @@ import urllib.parse
 import hashlib
 from datetime import datetime
 
-# 綠界測試環境測試用帳號
-MERCHANT_ID = "2000132"
-HASH_KEY = "5294y06JbISpM5x9"
-HASH_IV = "v77hoKGq4kWxNNIS"
+# 綠界測試環境測試用帳號 (包含廠商後台權限)
+MERCHANT_ID = "3002607"
+HASH_KEY = "pwFHCqoQZGmho4w6"
+HASH_IV = "EkRm7iFT261dpevs"
 
 # 綠界 AIO Checkout API 網址 (測試機)
 ECPAY_API_URL = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5"

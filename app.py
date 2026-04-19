@@ -385,6 +385,20 @@ def ecpay_return():
             elif plan_id == "business_single":
                 database.update_subscription(user_id, "BUSINESS")
                 msg_text = "🎉 感謝訂閱！升級為「商務旗艦」，本月擁有 1000 次智能健檢，且人工鑑定折抵 300 元！"
+                
+            # 取得最新額度資訊並附加在訊息後方
+            from datetime import datetime
+            now = datetime.now()
+            month_str = f"{now.year}-{now.month:02d}"
+            user_state = database.get_user_status_data(user_id, month_str)
+            free_limit = int(user_state.get('free_limit', 3))
+            usage = int(user_state.get('usage', 0))
+            purchased = int(user_state.get('purchased', 0))
+            tier = user_state.get('tier', 'FREE')
+            
+            rem_free = max(0, free_limit - usage)
+            
+            msg_text += f"\n\n---\n📊 目前最新額度狀態：\n⭐ 會員方案：{tier}\n🎁 當月方案額度剩餘：{rem_free} 次\n🪙 終身可用儲值點數：{purchased} 點"
             
             # 主動推播給消費者
             try:
@@ -422,6 +436,37 @@ def handle_message(event):
         flex_msg = get_subscription_flex(host, user_id)
         line_bot_api.reply_message(event.reply_token, flex_msg)
         return
+        
+    quota_keywords = ["查詢額度", "額度", "我的狀態", "會員狀態"]
+    if any(k in user_msg for k in quota_keywords):
+        from datetime import datetime
+        now = datetime.now()
+        month_str = f"{now.year}-{now.month:02d}"
+        
+        user_state = database.get_user_status_data(user_id, month_str)
+        free_limit = int(user_state.get('free_limit', 3))
+        usage = int(user_state.get('usage', 0))
+        purchased = int(user_state.get('purchased', 0))
+        tier = user_state.get('tier', 'FREE')
+        expiry = user_state.get('expiry', '無') or '無'
+        
+        rem_free = max(0, free_limit - usage)
+        discounts = {'FREE': '無折扣', 'BASIC': '折抵 100 元', 'ADVANCED': '折抵 200 元', 'BUSINESS': '折抵 300 元'}
+        disc_text = discounts.get(tier, '無折扣')
+        
+        msg_text = (
+            f"👤 您的會員狀態：\n"
+            f"🔸 當前方案：{tier}\n"
+            f"🔸 包月到期日：{expiry}\n"
+            f"🔸 預約人工鑑定專屬折扣：{disc_text}\n\n"
+            f"📊 您的健檢剩餘可用額度：\n"
+            f"🎁 本月專屬額度：{rem_free} / {free_limit} 次\n"
+            f"🪙 永久買斷點數：{purchased} 點\n\n"
+            f"💡 若額度不足，請輸入「購買」瀏覽升級方案。"
+        )
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg_text))
+        return
+        
     # 1. 偵測是否要「切換人工」 (配合你的圖文選單按鈕)
     if user_msg in ["人工預約", "人工客服", "專人服務","真人客服"]:
         database.set_user_mode(user_id, "HUMAN")
