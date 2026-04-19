@@ -150,16 +150,15 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 genai.configure(api_key=GEMINI_API_KEY)
 
 # ==========================================
-# 2. 記憶體資料庫 (正式上線可改用 Database)
+# 2. 記憶體與 PostgreSQL 資料庫
 # ==========================================
-# 記錄用戶狀態: 'AI' (智能客服) 或 'HUMAN' (人工客服)
-user_status = {} 
-# 記錄 Gemini 的對話歷史物件
+import database
+database.init_db()
+
+# 記錄 Gemini 的對話歷史物件 (短暫對話暫存，維持在記憶體)
 chat_sessions = {}
-# 暫存用戶上傳的照片 (防呆機制)
+# 暫存用戶上傳的照片 (防呆機制，短暫資料)
 user_images = {}
-# 記錄每月使用次數: 格式 {(user_id, year, month): 使用次數}
-usage_count = {}
 MONTHLY_LIMIT = 8
 
 # ==========================================
@@ -297,14 +296,14 @@ def handle_message(event):
         return
     # 1. 偵測是否要「切換人工」 (配合你的圖文選單按鈕)
     if user_msg in ["人工預約", "人工客服", "專人服務","真人客服"]:
-        user_status[user_id] = "HUMAN"
+        database.set_user_mode(user_id, "HUMAN")
         msg = "👨‍💼 已為您轉接人工預約服務。\n\n請直接留言您的需求，我們會盡快回覆您。\n\n(若需回到 AI 模式，請點擊選單「AI文物健檢」)"
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
         return
 
     # 2. 偵測是否要「切換回 AI」
     elif user_msg in ["AI文物健檢", "結束專人", "開啟智能客服"]:
-        user_status[user_id] = "AI"
+        database.set_user_mode(user_id, "AI")
         msg = (
             "🤖 歡迎使用【AI文物健檢】服務！\n\n"
             "請直接傳送您的「物件照片」與「文字說明」，我將為您進行初步分析。\n\n"
@@ -317,7 +316,7 @@ def handle_message(event):
         return
 
     # 3. 核心邏輯：預設為 HUMAN（靜音），需主動點選「AI文物健檢」才啟用 AI
-    current_mode = user_status.get(user_id, "HUMAN")
+    current_mode = database.get_user_mode(user_id)
 
     if current_mode == "HUMAN":
         # 「開始健檢」特例：提示用戶先啟動 AI 服務
@@ -342,8 +341,8 @@ def handle_message(event):
             # ---- 月度使用額度檢查 ----
             from datetime import datetime
             now = datetime.now()
-            usage_key = (user_id, now.year, now.month)
-            current_usage = usage_count.get(usage_key, 0)
+            month_str = f"{now.year}-{now.month:02d}"
+            current_usage = database.get_usage(user_id, month_str)
             if current_usage >= MONTHLY_LIMIT:
                 line_bot_api.reply_message(
                     event.reply_token,
@@ -368,8 +367,8 @@ def handle_message(event):
                 user_images[user_id] = []
                 
                 # ---- 扣除本月使用次數 ----
-                usage_count[usage_key] = current_usage + 1
-                remaining = MONTHLY_LIMIT - usage_count[usage_key]
+                database.increment_usage(user_id, month_str)
+                remaining = MONTHLY_LIMIT - (current_usage + 1)
                 
                 # 回傳分析結果
                 result_text = response.text + f"\n\n---\n📊 本月剩餘健檢次數：{remaining} / {MONTHLY_LIMIT}"
@@ -407,7 +406,7 @@ def handle_message(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
     user_id = event.source.user_id
-    current_mode = user_status.get(user_id, "HUMAN")
+    current_mode = database.get_user_mode(user_id)
 
     if current_mode == "AI":
         try:
